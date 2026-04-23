@@ -688,11 +688,11 @@ let isAuthenticated = false;
 const AUTH0_CONFIG = {
   // ⚠️  REEMPLAZA con tu dominio de Auth0
   // Ejemplo: "dev-abc123.us.auth0.com"
-  domain: "TU_DOMINIO.auth0.com",
+  domain: "dev-ycksqelgq6vbaqyp.us.auth0.com",
 
   // ⚠️  REEMPLAZA con el Client ID de tu aplicación Auth0
   // Ejemplo: "abc123XYZ..."
-  clientId: "TU_CLIENT_ID",
+  clientId: "7VvZHBqk2pKWvBj9XarJuNpIqbT4Ey4u",
 
   // URL de retorno después del login (debe coincidir con la
   // "Allowed Callback URL" configurada en el dashboard de Auth0)
