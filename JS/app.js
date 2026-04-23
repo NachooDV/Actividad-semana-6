@@ -697,7 +697,7 @@ const AUTH0_CONFIG = {
   // URL de retorno después del login (debe coincidir con la
   // "Allowed Callback URL" configurada en el dashboard de Auth0)
   authorizationParams: {
-    redirect_uri: window.location.origin
+    redirect_uri: "https://nachoodv.github.io/Actividad-semana-6/"
   }
 };
 
