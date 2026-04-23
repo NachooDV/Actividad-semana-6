@@ -801,7 +801,7 @@ async function handleLogout() {
   // Auth0 cierra la sesión y redirige al origin de la app
   await auth0Client.logout({
     logoutParams: {
-      returnTo: window.location.origin
+      returnTo: "https://nachoodv.github.io/Actividad-semana-6/"
     }
   });
 }
