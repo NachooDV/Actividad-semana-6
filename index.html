@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SportyStyle — Tienda Deportiva</title>
+
+  <!-- Hoja de estilos propia -->
+  <link rel="stylesheet" href="CSS/styles.css" />
+
+  <!--
+    SDK de Auth0 para Single Page Applications (SPA).
+    Proporciona las funciones: createAuth0Client, loginWithRedirect,
+    logout, getUser, isAuthenticated — sin manejar JWT manualmente.
+  -->
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+
+  <!-- Google Fonts: Barlow Condensed (display) + Barlow (cuerpo) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+</head>
+
+<body>
+
+  <!-- ============================================================
+       HEADER — Barra de navegación superior
+       Contiene: logo, mensaje de bienvenida y botones de auth
+  ============================================================ -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <!-- Logo de la tienda -->
+      <div class="logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">SportyStyle</span>
+      </div>
+
+      <!-- Zona de autenticación (se muestra/oculta según el estado) -->
+      <div class="auth-zone">
+
+        <!-- Mensaje de bienvenida: visible solo cuando el usuario está logueado -->
+        <p id="welcome-msg" class="welcome-msg hidden">
+          Bienvenido, <strong id="user-name"></strong> 👋
+        </p>
+
+        <!-- Botón Login: visible cuando NO está autenticado -->
+        <button id="btn-login" class="btn btn-primary" onclick="handleLogin()">
+          Iniciar sesión
+        </button>
+
+        <!-- Botón Logout: visible cuando SÍ está autenticado -->
+        <button id="btn-logout" class="btn btn-outline hidden" onclick="handleLogout()">
+          Cerrar sesión
+        </button>
+
+        <!-- Botón del carrito con contador de items -->
+        <button class="btn btn-cart" onclick="toggleCart()">
+          🛒 Carrito
+          <span id="cart-count" class="cart-badge">0</span>
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MAIN — Contenido principal de la página
+  ============================================================ -->
+  <main>
+
+    <!-- ----------------------------------------------------------
+         SECCIÓN: Hero / Banner de bienvenida
+    ---------------------------------------------------------- -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>Equípate para ganar</h1>
+        <p>Ropa deportiva de alto rendimiento para cada desafío.</p>
+        <a href="#catalogo" class="btn btn-primary btn-lg">Ver colección</a>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------
+         SECCIÓN: Catálogo de productos
+         Los productos se renderizan dinámicamente desde app.js
+         usando la función renderProducts(), pero aquí definimos
+         el contenedor que los recibirá.
+    ---------------------------------------------------------- -->
+    <section id="catalogo" class="catalog-section">
+      <h2 class="section-title">Nuestra Colección</h2>
+      <p class="section-subtitle">Selecciona los productos que quieres agregar a tu carrito</p>
+
+      <!-- Grid de tarjetas de producto (generado por JS) -->
+      <div id="products-grid" class="products-grid">
+        <!-- Las tarjetas se insertan aquí mediante JavaScript -->
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------
+         PANEL: Carrito de compras
+         Permanece oculto hasta que el usuario lo abre.
+         Se actualiza dinámicamente con cada producto añadido.
+    ---------------------------------------------------------- -->
+    <aside id="cart-panel" class="cart-panel hidden">
+      <div class="cart-header">
+        <h3>🛒 Tu Carrito</h3>
+        <button class="btn-close" onclick="toggleCart()">✕</button>
+      </div>
+
+      <!-- Lista de productos en el carrito (generada por JS) -->
+      <ul id="cart-items" class="cart-items">
+        <!-- Se llena dinámicamente -->
+      </ul>
+
+      <!-- Pie del carrito: total y botón para ir al formulario -->
+      <div class="cart-footer">
+        <div class="cart-total">
+          Total: <strong id="cart-total">$0</strong>
+        </div>
+
+        <!-- Solo disponible si hay items en el carrito -->
+        <button id="btn-checkout" class="btn btn-primary btn-full" onclick="goToCheckout()">
+          Finalizar compra
+        </button>
+      </div>
+    </aside>
+
+    <!-- Overlay oscuro detrás del panel del carrito -->
+    <div id="cart-overlay" class="overlay hidden" onclick="toggleCart()"></div>
+
+    <!-- ----------------------------------------------------------
+         SECCIÓN: Formulario de compra (checkout)
+         Oculto por defecto, se muestra tras ir al checkout.
+    ---------------------------------------------------------- -->
+    <section id="checkout-section" class="checkout-section hidden">
+      <div class="checkout-card">
+        <h2>📦 Datos de envío</h2>
+        <p class="section-subtitle">Completa tus datos para finalizar la compra</p>
+
+        <!-- Resumen del pedido dentro del formulario -->
+        <div id="order-summary" class="order-summary">
+          <!-- Se llena dinámicamente desde JS -->
+        </div>
+
+        <!-- Formulario con validaciones -->
+        <form id="checkout-form" novalidate>
+
+          <!-- Campo: Nombre completo -->
+          <div class="form-group">
+            <label for="full-name">Nombre completo *</label>
+            <input
+              type="text"
+              id="full-name"
+              name="full-name"
+              placeholder="Ej: María González"
+              required
+            />
+            <span class="field-error" id="error-name"></span>
+          </div>
+
+          <!-- Campo: Dirección de envío -->
+          <div class="form-group">
+            <label for="address">Dirección de envío *</label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              placeholder="Ej: Av. Las Flores 1234, Santiago"
+              required
+            />
+            <span class="field-error" id="error-address"></span>
+          </div>
+
+          <!-- Campo: Correo electrónico (validación de formato) -->
+          <div class="form-group">
+            <label for="email">Correo electrónico *</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Ej: maria@gmail.com"
+              required
+            />
+            <span class="field-error" id="error-email"></span>
+          </div>
+
+          <!-- Campo: Teléfono (solo números) -->
+          <div class="form-group">
+            <label for="phone">Teléfono *</label>
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              placeholder="Ej: 912345678"
+              maxlength="15"
+              required
+            />
+            <span class="field-error" id="error-phone"></span>
+          </div>
+
+          <!-- Botones del formulario -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" onclick="backToCatalog()">
+              ← Volver
+            </button>
+            <button type="submit" class="btn btn-primary" id="btn-submit">
+              Confirmar compra ✓
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------
+         SECCIÓN: Confirmación de compra
+         Oculta hasta que el usuario envía el formulario correctamente.
+    ---------------------------------------------------------- -->
+    <section id="confirmation-section" class="confirmation-section hidden">
+      <div class="confirmation-card">
+
+        <!-- Ícono animado de éxito -->
+        <div class="success-icon">✅</div>
+
+        <h2>¡Gracias por tu compra!</h2>
+        <p class="confirmation-subtitle">
+          Tu pedido ha sido recibido y está siendo procesado.
+        </p>
+
+        <!-- Detalle del pedido (se llena desde JS) -->
+        <div id="confirmation-detail" class="confirmation-detail">
+          <!-- Nombre, productos, totales -->
+        </div>
+
+        <!-- Botón para reiniciar y volver al inicio -->
+        <button class="btn btn-primary btn-lg" onclick="resetApp()">
+          Volver al inicio
+        </button>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="site-footer">
+    <p>© 2026 SportyStyle — Ignacio de la Vega - Semana 6 - CIB302</p>
+  </footer>
+
+  <!-- Script principal de la aplicación (se carga al final del body) -->
+  <script src="JS/app.js"></script>
+
+</body>
+</html>
