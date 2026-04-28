@@ -686,18 +686,16 @@ let isAuthenticated = false;
 
 /* Configuración de tu aplicación en Auth0 */
 const AUTH0_CONFIG = {
-  // ⚠️  REEMPLAZA con tu dominio de Auth0
-  // Ejemplo: "dev-abc123.us.auth0.com"
+   // Ejemplo: "dev-abc123.us.auth0.com"
   domain: "dev-ycksqelgq6vbaqyp.us.auth0.com",
 
-  // ⚠️  REEMPLAZA con el Client ID de tu aplicación Auth0
   // Ejemplo: "abc123XYZ..."
   clientId: "7VvZHBqk2pKWvBj9XarJuNpIqbT4Ey4u",
 
   // URL de retorno después del login (debe coincidir con la
   // "Allowed Callback URL" configurada en el dashboard de Auth0)
   authorizationParams: {
-    redirect_uri: "https://nachoodv.github.io/Actividad-semana-6/"
+    redirect_uri: window.location.origin
   }
 };
 
@@ -801,7 +799,7 @@ async function handleLogout() {
   // Auth0 cierra la sesión y redirige al origin de la app
   await auth0Client.logout({
     logoutParams: {
-      returnTo: "https://nachoodv.github.io/Actividad-semana-6/"
+      returnTo: window.location.origin
     }
   });
 }
