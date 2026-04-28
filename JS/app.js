@@ -695,7 +695,7 @@ const AUTH0_CONFIG = {
   // URL de retorno después del login (debe coincidir con la
   // "Allowed Callback URL" configurada en el dashboard de Auth0)
   authorizationParams: {
-    redirect_uri: window.location.origin
+    redirect_uri: window.location.origin + window.location.pathname
   }
 };
 
@@ -799,7 +799,7 @@ async function handleLogout() {
   // Auth0 cierra la sesión y redirige al origin de la app
   await auth0Client.logout({
     logoutParams: {
-      returnTo: window.location.origin
+      returnTo: window.location.origin + window.location.pathname
     }
   });
 }
