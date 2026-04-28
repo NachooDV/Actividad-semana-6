@@ -4,6 +4,7 @@ SportyStyle es una mini tienda online de ropa deportiva que permite a los usuari
 navegar un catálogo de productos, agregar artículos al carrito, iniciar sesión de
 forma segura y completar una simulación de compra.
 
+Link de la tienda: https://nachoodv.github.io/Actividad-semana-6/
 ---
 
 ## ¿Qué hace la aplicación?
